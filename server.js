@@ -12,8 +12,6 @@ import session from "express-session";
 
 const app = express();
 
-console.log("[SERVER] Starting server configuration");
-
 app.use(
   cors({
     credentials: true,
@@ -36,22 +34,9 @@ if (process.env.NODE_ENV !== "development") {
   };
 }
 
-// Add request logging middleware
-app.use((req, res, next) => {
-  console.log(`[SERVER] ${req.method} ${req.url}`);
-  next();
-});
-
 app.use(session(sessionOptions));
 app.use(express.json());
 
-// Add test route
-app.get("/api/test", (req, res) => {
-  console.log("[SERVER] Test route hit");
-  res.json({ message: "Server is working" });
-});
-
-console.log("[SERVER] Configuring routes...");
 UserRoutes(app);
 CourseRoutes(app);
 ModuleRoutes(app);

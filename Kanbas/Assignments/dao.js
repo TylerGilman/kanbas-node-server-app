@@ -5,12 +5,9 @@ export const findAllAssignments = () => {
 };
 
 export const findAssignmentsForCourse = (courseId) => {
-  console.log("DAO: Finding assignments for course:", courseId);
-  console.log("DAO: All assignments:", Database.assignments);
   const assignments = Database.assignments.filter(
     (assignment) => assignment.course === courseId
   );
-  console.log("DAO: Filtered assignments:", assignments);
   return assignments;
 };
 

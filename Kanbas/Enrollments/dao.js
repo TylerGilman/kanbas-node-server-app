@@ -1,23 +1,11 @@
 import Database from "../Database/index.js";
 
-/**
- * Fetch all enrollments for a course.
- * @param {string} courseId
- * @returns {Array} List of enrollments for the course.
- */
 export function getEnrollmentsForCourse(courseId) {
   return Database.enrollments.filter((enrollment) => enrollment.course === courseId);
 }
 
-/**
- * Enroll a user in a course.
- * @param {string} userId
- * @param {string} courseId
- * @returns {Object} The new enrollment.
- */
 export function enrollUserInCourse(userId, courseId) {
   const { enrollments } = Database;
-  console.log("test");
   // Check if user is already enrolled
   const isEnrolled = enrollments.some(
     (enrollment) => enrollment.user === userId && enrollment.course === courseId
@@ -31,12 +19,6 @@ export function enrollUserInCourse(userId, courseId) {
   return newEnrollment;
 }
 
-/**
- * Unenroll a user from a course.
- * @param {string} userId
- * @param {string} courseId
- * @returns {Object} The removed enrollment.
- */
 export function unenrollUserFromCourse(userId, courseId) {
   const { enrollments } = Database;
 
