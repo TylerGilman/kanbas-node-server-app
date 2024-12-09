@@ -3,7 +3,10 @@ import * as courseDao from "../Courses/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";
 export default function UserRoutes(app) {
   const createUser = (req, res) => { };
-  const deleteUser = (req, res) => { };
+  const deleteUser = async (req, res) => {
+      const status = await dao.deleteUser(req.params.userId);
+      res.json(status);
+  };
   const findAllUsers = async (req, res) => {
     const { role, name } = req.query;
     if (role) {
