@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import schema from "./schema.js";
+import assignmentSchema from "./schema.js"; // Import the schema
 
-const AssignmentModel = mongoose.model("AssignmentModel", schema);
+const AssignmentModel = mongoose.model("AssignmentModel", assignmentSchema); // Use schema as 2nd parameter
 
-export default AssignmentModel;
+export default AssignmentModel; // Export the model

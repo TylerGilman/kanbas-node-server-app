@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
-const schema = new mongoose.Schema(
+
+const moduleSchema = new mongoose.Schema(
   {
-    name: String,
-    description: String,
-    course: { type: mongoose.Schema.Types.ObjectId, ref: "CourseModel" },
+    name: { type: String, required: true },
+    description: { type: String },
+    course: { type: String, ref: "CourseModel", required: true },
   },
-  { collection: "modules" }
+  { collection: "modules" } // This sets the MongoDB collection name
 );
-export default schema;
+
+export default mongoose.model("ModuleModel", moduleSchema);

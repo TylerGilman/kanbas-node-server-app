@@ -18,4 +18,6 @@ const userSchema = new mongoose.Schema({
   },
   { collection: "users" }
 );
+userSchema.index({ username: 1 });
+userSchema.index({ email: 1 });
 export default userSchema;
