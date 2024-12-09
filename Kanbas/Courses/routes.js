@@ -8,9 +8,13 @@ export default function CourseRoutes(app) {
   });
 
   app.get("/api/courses", async (req, res) => {
-    const courses = await dao.findAllCourses();
-    res.send(courses);
-  })
+    try {
+      const courses = await dao.findAllCourses();
+      res.json(courses);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
  app.post("/api/courses", async (req, res) => {
    const course = await dao.createCourse(req.body);
