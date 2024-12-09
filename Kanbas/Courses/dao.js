@@ -1,7 +1,12 @@
 import Database from "../Database/index.js";
 import model from "./model.js"
-export function findAllCourses() {
-  return model.find();
+
+export async function findAllCourses() {
+  // Only return courses that have both name and description
+  return model.find({
+    name: { $exists: true, $ne: "" },
+    description: { $exists: true, $ne: "" }
+  });
 }
 
 export async function findCoursesForUser(userId) {
@@ -10,12 +15,17 @@ export async function findCoursesForUser(userId) {
 }
 
 export function createCourse(course) {
- delete course._id;
- return model.create(course);
+  if (course._id) {
+    delete course._id; // Ensure _id is removed if present
+  }
+  return model.create(course);
 }
 
 export function deleteCourse(courseId) {
- return model.deleteOne({ _id: courseId });
+  if (!courseId) {
+    throw new Error("Course ID is required");
+  }
+  return model.deleteOne({ _id: courseId });
 }
 
 export function updateCourse(courseId, courseUpdates) {

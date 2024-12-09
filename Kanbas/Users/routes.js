@@ -39,17 +39,27 @@ export default function UserRoutes(app) {
    }
     res.json(currentUser);
   };
-  const signup = async (req, res) => {
-    const user = await dao.findUserByUsername(req.body.username);
-    if (user) {
-      res.status(400).json(
-        { message: "Username already in use" });
-      return;
+
+const signup = async (req, res) => {
+  try {
+    const existingUser = await dao.findUserByUsername(req.body.username);
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already exists" });
     }
-    const currentUser = await dao.createUser(req.body);
+    
+    const newUser = {
+      ...req.body,
+      role: req.body.role || "USER"
+    };
+    const currentUser = await dao.createUser(newUser);
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
-  };
+  } catch (error) {
+    console.error("Server signup error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
   const signin = async (req, res) => {
     const { username, password } = req.body;
     const currentUser = await dao.findUserByCredentials(username, password);
