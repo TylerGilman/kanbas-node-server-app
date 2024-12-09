@@ -1,19 +1,16 @@
 import * as dao from "./dao.js";
 import * as modulesDao from "../Modules/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";
-
-const findUsersForCourse = async (req, res) => {
-  const { cid } = req.params;
-  try {
-    const users = await enrollmentsDao.findUsersForCourse(cid);
-    res.json(users);
-  } catch (error) {
-    console.error("Error fetching users for course:", error);
-    res.status(500).json({ error: "Failed to retrieve users for course" });
-  }
-};
+import * as usersDao from "../Users/dao.js";
 
 export default function CourseRoutes(app) {
+ const findUsersForCourse = async (req, res) => {
+   const { cid } = req.params;
+   const users = await userDao.findUsersForCourse(cid);
+   res.json(users);
+ };
+ app.get("/api/courses/:cid/users", findUsersForCourse);
+
   app.get("/api/courses/:courseId/modules", async (req, res) => {
     const { courseId } = req.params;
     const modules = await modulesDao.findModulesForCourse(courseId);
@@ -28,8 +25,6 @@ export default function CourseRoutes(app) {
       res.status(500).json({ error: error.message });
     }
   });
-
-app.get("/api/courses/:cid/users", findUsersForCourse);
 
 app.put("/api/courses/:courseId", async (req, res) => {
   const { courseId } = req.params;
