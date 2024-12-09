@@ -1,13 +1,23 @@
-import Database from "../Database/index.js";
 import model from "./model.js"
 
 export async function findAllCourses() {
   // Only return courses that have both name and description
-  return model.find({
+  return await model.find({
     name: { $exists: true, $ne: "" },
     description: { $exists: true, $ne: "" }
   });
 }
+
+const findUsersForCourse = async (req, res) => {
+  const { cid } = req.params;
+  try {
+    const users = await enrollmentsDao.findUsersForCourse(cid);
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users for course:", error);
+    res.status(500).json({ error: "Failed to retrieve users for course" });
+  }
+};
 
 export async function findCoursesForUser(userId) {
  const enrollments = await model.find({ user: userId }).populate("course");

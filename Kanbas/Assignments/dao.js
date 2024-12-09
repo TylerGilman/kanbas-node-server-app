@@ -1,35 +1,25 @@
-import Database from "../Database/index.js";
+import AssignmentModel from "./model.js";
 
-export const findAllAssignments = () => {
-  return Database.assignments;
+export const findAllAssignments = async () => {
+  return AssignmentModel.find().populate("course");
 };
 
-export const findAssignmentsForCourse = (courseId) => {
-  const assignments = Database.assignments.filter(
-    (assignment) => assignment.course === courseId
-  );
-  return assignments;
+export const findAssignmentsForCourse = async (courseId) => {
+  return AssignmentModel.find({ course: courseId }).populate("course");
 };
 
-export const createAssignment = (assignment) => {
-  Database.assignments.push(assignment);
-  return assignment;
+export const findAssignmentById = async (id) => {
+  return AssignmentModel.findById(id).populate("course");
 };
 
-export const findAssignmentById = (aid) => {
-  return Database.assignments.find((a) => a._id === aid);
+export const createAssignment = async (assignment) => {
+  return AssignmentModel.create(assignment);
 };
 
-export const updateAssignment = (aid, assignment) => {
-  Database.assignments = Database.assignments.map((a) =>
-    a._id === aid ? { ...assignment } : a
-  );
-  return assignment;
+export const updateAssignment = async (id, updatedData) => {
+  return AssignmentModel.findByIdAndUpdate(id, updatedData, { new: true });
 };
 
-export const deleteAssignment = (aid) => {
-  Database.assignments = Database.assignments.filter(
-    (a) => a._id !== aid
-  );
-  return { status: "OK" };
+export const deleteAssignment = async (id) => {
+  return AssignmentModel.findByIdAndDelete(id);
 };
