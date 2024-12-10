@@ -1,11 +1,18 @@
-import model from "./model.js"
+import model from "./model.js";
+
+export function createCourse(course) {
+  // Generate a string ID if not provided
+  if (!course._id) {
+    course._id = new Date().getTime().toString();
+  }
+  return model.create(course);
+}
 
 export async function findAllCourses() {
   try {
     return await model.find({
-      _id: { $exists: true, $ne: "" },
-      name: { $exists: true, $ne: "" },
-      description: { $exists: true, $ne: "" },
+      number: { $exists: true },
+      name: { $exists: true }
     });
   } catch (error) {
     console.error("Error fetching courses from database:", error);
@@ -13,20 +20,10 @@ export async function findAllCourses() {
   }
 }
 
-export function createCourse(course) {
-  if (course.number) {
-    delete course.number; // Ensure _id is removed if present
-  }
-  return model.create(course);
-}
-
 export function deleteCourse(courseId) {
-  if (!courseId) {
-    throw new Error("Course ID is required");
-  }
-  return model.deleteOne({ number: courseId });
+  return model.deleteOne({ _id: courseId });
 }
 
 export function updateCourse(courseId, courseUpdates) {
- return model.updateOne({ number: courseId }, { $set: courseUpdates });
+  return model.updateOne({ _id: courseId }, { $set: courseUpdates });
 }
