@@ -4,18 +4,16 @@ import * as enrollmentsDao from "../Enrollments/dao.js";
 import * as usersDao from "../Users/dao.js";
 
 export default function CourseRoutes(app) {
-    const findUsersForCourse = async (req, res) => {
-        try {
-            const { cid } = req.params;
-            const users = await enrollmentsDao.findUsersForCourse(cid);
-            res.json(users);
-        } catch (error) {
-            console.error("Error fetching users for course:", error);
-            res.status(500).json({ error: "Failed to retrieve users for course" });
-        }
-    };
 
-  app.get("/api/courses/:cid/users", findUsersForCourse);
+app.get('/api/courses', async (req, res) => {
+  try {
+    const courses = await findAllCourses();
+    res.json(courses);
+  } catch (error) {
+    console.error("Error in /api/courses route:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
   app.get("/api/courses/:courseId/modules", async (req, res) => {
     const { courseId } = req.params;
@@ -23,14 +21,6 @@ export default function CourseRoutes(app) {
     res.json(modules);
   });
 
-  app.get("/api/courses", async (req, res) => {
-    try {
-      const courses = await dao.findAllCourses();
-      res.json(courses);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
 
 app.put("/api/courses/:courseId", async (req, res) => {
   const { courseId } = req.params;

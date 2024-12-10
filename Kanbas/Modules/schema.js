@@ -1,3 +1,4 @@
+// Kanbas/Modules/schema.js
 import mongoose from "mongoose";
 
 const moduleSchema = new mongoose.Schema(
@@ -6,7 +7,7 @@ const moduleSchema = new mongoose.Schema(
     description: { type: String },
     course: { type: String, ref: "CourseModel", required: true },
   },
-  { collection: "modules" } // This sets the MongoDB collection name
+  { collection: "modules" }
 );
 
-export default mongoose.model("ModuleModel", moduleSchema);
+export default moduleSchema;

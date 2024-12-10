@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema(
   {
-    course: { type: String, ref: "CourseModel" },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
-    grade: Number,
-    letterGrade: String,
-    enrollmentDate: Date,
-    status: {
-      type: String,
-      enum: ["ENROLLED", "DROPPED", "COMPLETED"],
-      default: "ENROLLED",
+    course: { 
+      type: String, // Store the course number
+      required: true,
+      ref: "CourseModel" 
     },
+    user: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      required: true,
+      ref: "UserModel" 
+    }
   },
   { collection: "enrollments" }
 );

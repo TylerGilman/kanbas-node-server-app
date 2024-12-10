@@ -1,16 +1,16 @@
 import model from "./model.js"
 
 export async function findAllCourses() {
-  // Only return courses that have both name and description
-  return await model.find({
-    name: { $exists: true, $ne: "" },
-    description: { $exists: true, $ne: "" }
-  });
-}
-
-export async function findCoursesForUser(userId) {
- const enrollments = await model.find({ user: userId }).populate("course");
- return enrollments.map((enrollment) => enrollment.course);
+  try {
+    return await model.find({
+      _id: { $exists: true, $ne: "" },
+      name: { $exists: true, $ne: "" },
+      description: { $exists: true, $ne: "" },
+    });
+  } catch (error) {
+    console.error("Error fetching courses from database:", error);
+    throw new Error("Database query failed");
+  }
 }
 
 export function createCourse(course) {
