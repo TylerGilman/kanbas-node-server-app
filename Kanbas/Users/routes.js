@@ -126,7 +126,6 @@ const findCoursesForUser = async (req, res) => {
     console.log("Finding courses for user:", uid); // Debug log
 
     const courses = await enrollmentsDao.findCoursesForUser(uid);
-    console.log("Found courses:", courses); // Debug log
     
     return res.json(courses);
   } catch (error) {
