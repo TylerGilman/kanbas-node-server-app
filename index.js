@@ -10,16 +10,35 @@ import AssignmentRoutes from "./Kanbas/Assignments/routes.js";
 import "dotenv/config";
 import session from "express-session";
 
-const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kanbas"
-mongoose.connect(CONNECTION_STRING);
-const app = express();
+const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kanbas";
 
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.NETLIFY_URL || "http://localhost:3000",
+mongoose.connect(CONNECTION_STRING)
+  .then(async () => {
+    console.log('Connected to MongoDB Atlas');
+    const admin = mongoose.connection.db.admin();
+    const dbs = await admin.listDatabases();
+    console.log('Available databases:', dbs.databases.map(db => db.name));
+    
+    // List collections
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log('Collections in kanbas:', collections.map(c => c.name));
+    
+    // Try to fetch documents from each collection
+    for (const collection of collections) {
+      const count = await mongoose.connection.db.collection(collection.name).countDocuments();
+      const sample = await mongoose.connection.db.collection(collection.name).findOne({});
+      console.log(`Collection ${collection.name}:`);
+      console.log('- Document count:', count);
+      console.log('- Sample document:', sample);
+    }
   })
-);
+  .catch(err => {
+    console.error('Connection error:', err);
+  });
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
 
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kanbas",
@@ -35,6 +54,15 @@ if (process.env.NODE_ENV !== "development") {
     domain: process.env.NODE_SERVER_DOMAIN,
   };
 }
+
+const app = express();
+
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.NETLIFY_URL || "http://localhost:3000",
+  })
+);
 
 app.use(session(sessionOptions));
 app.use(express.json());

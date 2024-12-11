@@ -1,37 +1,36 @@
-// Kanbas/Enrollments/dao.js
-import model from "./model.js";
-import courseModel from "../Courses/model.js";
+import AssignmentModel from "./model.js";
 
-export async function findUsersForCourse(courseId) {
-    try {
-        const enrollments = await model.find({ course: courseId })
-            .populate({
-                path: "user",
-                select: "-password"
-            });
-        return enrollments.map(enrollment => enrollment.user);
-    } catch (error) {
-        console.error("Error finding users for course:", error);
-        throw error;
-    }
+export async function findAssignmentsForCourse(courseNumber) {
+  console.log("[DAO] findAssignmentsForCourse:", courseNumber);
+  const assignments = await AssignmentModel.find({ course: courseNumber });
+  console.log("[DAO] findAssignmentsForCourse result:", assignments);
+  return assignments;
 }
 
-export async function findCoursesForUser(userId) {
-    try {
-        const enrollments = await model.find({ user: userId });
-        const courseNumbers = enrollments.map(e => e.course);
-        const courses = await courseModel.find({ number: { $in: courseNumbers }});
-        return courses;
-    } catch (error) {
-        console.error("Error finding courses for user:", error);
-        throw error;
-    }
+export async function findAssignmentById(assignmentId) {
+  console.log("[DAO] findAssignmentById:", assignmentId);
+  const assignment = await AssignmentModel.findById(assignmentId);
+  console.log("[DAO] findAssignmentById result:", assignment);
+  return assignment;
 }
 
-export async function enrollUserInCourse(userId, courseId) {
-    return model.create({ user: userId, course: courseId });
+export async function createAssignment(assignment) {
+  console.log("[DAO] createAssignment:", assignment);
+  const newAssignment = await AssignmentModel.create(assignment);
+  console.log("[DAO] createAssignment result:", newAssignment);
+  return newAssignment;
 }
 
-export async function unenrollUserFromCourse(userId, courseId) {
-    return model.deleteOne({ user: userId, course: courseId });
+export async function updateAssignment(assignmentId, assignmentUpdates) {
+  console.log("[DAO] updateAssignment:", assignmentId, "updates:", assignmentUpdates);
+  const updated = await AssignmentModel.findByIdAndUpdate(assignmentId, assignmentUpdates, { new: true });
+  console.log("[DAO] updateAssignment result:", updated);
+  return updated;
+}
+
+export async function deleteAssignment(assignmentId) {
+  console.log("[DAO] deleteAssignment:", assignmentId);
+  const deleted = await AssignmentModel.findByIdAndDelete(assignmentId);
+  console.log("[DAO] deleteAssignment result:", deleted);
+  return deleted;
 }

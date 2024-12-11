@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 const courseSchema = new mongoose.Schema(
   {
-    _id: String,
     name: String,
-    number: { type: String, required: true },
+    number: String,
     credits: Number,
     description: String,
   },
-  { collection: "courses" }
+  { collection: "courses" }  // Explicitly specify lowercase collection name
 );
 export default courseSchema;
