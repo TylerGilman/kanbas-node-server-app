@@ -27,11 +27,30 @@ app.delete("/api/courses/:cid/enrollments/:uid", async (req, res) => {
 
 
 app.put("/api/courses/:courseId", async (req, res) => {
-  const { courseId } = req.params;
-  const courseUpdates = req.body;
-  
-  const status = await dao.updateCourse(courseId, courseUpdates);
-  res.json(status);
+  try {
+    const { courseId } = req.params;
+    const courseUpdates = req.body;
+    
+    console.log("[PUT /api/courses/:courseId] Updating course:", courseId, "with:", courseUpdates);
+    
+    const status = await dao.updateCourse(courseId, courseUpdates);
+    
+    if (status.matchedCount === 0) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    
+    if (status.modifiedCount === 0) {
+      return res.status(400).json({ message: "No changes made to the course" });
+    }
+    
+    res.json({ message: "Course updated successfully", status });
+  } catch (error) {
+    console.error("[PUT /api/courses/:courseId] Error:", error);
+    res.status(500).json({ 
+      message: "Error updating course", 
+      error: error.message 
+    });
+  }
 });
 
  app.delete("/api/courses/:courseId", async (req, res) => {
