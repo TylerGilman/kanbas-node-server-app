@@ -13,34 +13,29 @@ export default function ModuleRoutes(app) {
     }
   });
 
-  app.put("/api/modules/:moduleId", async (req, res) => {
-    try {
-      const { moduleId } = req.params;
-      console.log("[Routes] Update request for module:", moduleId);
-      console.log("[Routes] Update data:", req.body);
+app.put("/api/modules/:moduleId", async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    console.log("[Routes] Update request for module:", moduleId);
+    console.log("[Routes] Update data:", req.body);
 
-      const existingModule = await modulesDao.findModuleById(moduleId);
-      if (!existingModule) {
-        console.log("[Routes] Module not found:", moduleId);
-        return res.status(404).json({
-          message: `Module not found: ${moduleId}`,
-          moduleId,
-          requestBody: req.body
-        });
-      }
+    // Exclude `_id` from the request body
+    const { _id, ...updateData } = req.body;
 
-      const updatedModule = await modulesDao.updateModule(moduleId, req.body);
-      console.log("[Routes] Update successful:", updatedModule);
-      res.json(updatedModule);
-    } catch (error) {
-      console.error("[Routes] Update failed:", error);
-      res.status(500).json({
-        message: error.message,
-        moduleId: req.params.moduleId,
-        requestBody: req.body
-      });
+    const existingModule = await modulesDao.findModuleById(moduleId);
+    if (!existingModule) {
+      console.log("[Routes] Module not found:", moduleId);
+      return res.status(404).json({ message: `Module not found: ${moduleId}` });
     }
-  });
+
+    const updatedModule = await modulesDao.updateModule(moduleId, updateData);
+    console.log("[Routes] Update successful:", updatedModule);
+    res.json(updatedModule);
+  } catch (error) {
+    console.error("[Routes] Update failed:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
 
   // Find modules for course
   app.get("/api/courses/:courseId/modules", async (req, res) => {

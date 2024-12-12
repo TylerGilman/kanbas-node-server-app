@@ -15,56 +15,62 @@ export function findModulesForCourse(courseId) {
   return model.find({ course: courseId });
 }
 
-export function createModule(module) {
-  // For new modules, use timestamp string ID
-  module._id = module._id || new Date().getTime().toString();
-  console.log("[DAO createModule] Creating module:", module);
-  return model.create(module);
-}
-
-export async function updateModule(moduleId, moduleUpdates) {
-  console.log("[DAO updateModule] Updating module:", moduleId);
-  console.log("[DAO updateModule] Updates:", moduleUpdates);
-
-  const updates = { ...moduleUpdates };
-  delete updates._id;
-  delete updates.editing;
-
-  // Create query that can match either ObjectId or string ID
-  let query = { _id: moduleId };
-  if (isValidObjectId(moduleId)) {
-    query = {
-      $or: [
-        { _id: moduleId },
-        { _id: new mongoose.Types.ObjectId(moduleId) }
-      ]
-    };
-  }
+export const createModule = async (module) => {
+  console.log("[DAO] createModule:", module);
 
   try {
-    const result = await model.findOneAndUpdate(
-      query,
-      { $set: updates },
-      { new: true }
-    );
-    console.log("[DAO updateModule] Result:", result);
-    return result;
+    // Ensure `_id` is not explicitly set
+    const { _id, ...moduleData } = module;
+
+    const newModule = await model.create(moduleData);
+    console.log("[DAO] createModule result:", newModule);
+    return newModule;
   } catch (error) {
-    console.error("[DAO updateModule] Error:", error);
+    console.error("[DAO] Error creating module:", error.message);
     throw error;
   }
-}
+};
+
+export const findModuleById = async (moduleId) => {
+  try {
+    console.log("[DAO] findModuleById:", moduleId);
+    const isValid = mongoose.Types.ObjectId.isValid(moduleId);
+    if (!isValid) {
+      console.error("[DAO] Invalid ObjectId:", moduleId);
+      return null;
+    }
+    const module = await model.findById(new mongoose.Types.ObjectId(moduleId));
+    console.log("[DAO] findModuleById result:", module);
+    return module;
+  } catch (error) {
+    console.error("[DAO] Error in findModuleById:", error.message);
+    throw error;
+  }
+};
+
+export const updateModule = async (moduleId, moduleUpdates) => {
+  console.log("[DAO] updateModule:", moduleId, "updates:", moduleUpdates);
+
+  // Remove `_id` from the update payload
+  const { _id, ...updates } = moduleUpdates;
+
+  const updated = await model.findByIdAndUpdate(
+    new mongoose.Types.ObjectId(moduleId), // Ensure `moduleId` is a valid ObjectId
+    updates,
+    { new: true, runValidators: true } // Return updated document and validate updates
+  );
+
+  console.log("[DAO] updateModule result:", updated);
+  return updated;
+};
 
 export async function deleteModule(moduleId) {
   console.log("[DAO deleteModule] Deleting module:", moduleId);
-  let query = { _id: moduleId };
-  if (isValidObjectId(moduleId)) {
-    query = {
-      $or: [
-        { _id: moduleId },
-        { _id: new mongoose.Types.ObjectId(moduleId) }
-      ]
-    };
+  if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+    console.error("[DAO] Invalid ObjectId for delete:", moduleId);
+    return null;
   }
-  return model.findOneAndDelete(query);
+  const result = await model.findByIdAndDelete(new mongoose.Types.ObjectId(moduleId));
+  console.log("[DAO] deleteModule result:", result);
+  return result;
 }
